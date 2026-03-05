@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=rest_api_service;Username=postgres;Password=postgres
+      Jwt__Issuer: RestApiService
+      Jwt__Audience: RestApiServiceClients
+      Jwt__SecretKey: SUPER_SECRET_KEY_CHANGE_IN_PRODUCTION_1234567890
+      Jwt__AccessTokenLifetimeMinutes: 15
+      Jwt__RefreshTokenLifetimeDays: 7
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: rest_api_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
